@@ -34,61 +34,21 @@ class SideEffectActivity : ComponentActivity() {
 @OptIn(InternalComposeApi::class)
 @Composable
 fun Counter() {
-    // Define a state variable for the count
-    val count = remember { mutableStateOf(0) }
-
-    // Use SideEffect to log the current value of count
-    SideEffect {
-        // Called on every recomposition
-        println("Outer Count is ${count.value}")
-    }
-    println("CurrentScope =  ${currentComposer1.recomposeScope}")
-
-    Button(onClick = { count.value++ }) {
-        // Use SideEffect to log the current value of count
-        SideEffect {
-            // Called on every recomposition
-            println("Inner Count is ${count.value}")
-        }
-
-        println("CurrentScope =  ${currentComposer1.recomposeScope}")
-        // This recomposition doesn't trigger the outer side effect
-        // every time button has been tapped
-        Text("Increase Count $count")
-    }
-}
-
-
-@OptIn(InternalComposeApi::class)
-@Composable
-fun CounterDeeper() {
 
     var count by remember { mutableStateOf(0) }
 
     SideEffect {
-        println("Count ")
+        println("Outer Count is ${count}")
     }
 
-    println("CurrentScope =  ${currentComposer1.recomposeScope}")
+   // если не подклюясь outer scope не работает
+   // Text("Current Count ${count}")
 
-    Button(count = { count }, onClick = {
-        count++
+    Button(onClick = { count++ }) {
+
+        SideEffect {
+            println("Inner Count is ${count}")
+        }
+        Text("Increase Count ${count}")
     }
-    )
-}
-
-@OptIn(InternalComposeApi::class)
-@Composable
-fun Button(count: () -> Int, onClick: () -> Unit) {
-
-    SideEffect {
-        println("Inner recompose ")
-    }
-
-    println("CurrentScope =  ${currentComposer1.recomposeScope}")
-    Button(onClick = onClick) {
-        println("CurrentScope =  ${currentComposer1.recomposeScope}")
-        Text("Increase Count ${count()}")
-    }
-
 }
